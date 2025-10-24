@@ -96,8 +96,8 @@ O objetivo é auxiliar o aprendizado de **lógica proposicional**, tornando a tr
 
 ## 📂 Estrutura do projeto
 
-|-- index.html # Interface web e lógica principal
-|-- README.md # Este arquivo
+|__ index.html # Interface web e lógica principal
+|__ README.md # Este arquivo
 
 ---
 
