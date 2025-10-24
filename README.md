@@ -5,7 +5,6 @@
 > Aluno: Julio Cesar
 
 ---
-
 ## 📝 Descrição
 
 Este projeto é um **Agente de IA simples para Web**, capaz de:
@@ -57,7 +56,7 @@ O objetivo é auxiliar o aprendizado de **lógica proposicional**, tornando a tr
 
 ---
 
-## 🧩 Exemplos de uso (com imagens)
+## 🧩 Exemplos de uso
 
 ### 1️⃣ NL → CPC
 
@@ -66,8 +65,6 @@ O objetivo é auxiliar o aprendizado de **lógica proposicional**, tornando a tr
 
 **Fórmula gerada:**  
 `P → Q`
-
-![Exemplo NL para CPC](https://i.imgur.com/q2EwZlB.png)  
 
 ---
 
@@ -78,10 +75,6 @@ O objetivo é auxiliar o aprendizado de **lógica proposicional**, tornando a tr
 
 **Frase gerada:**  
 *"Se (chover e fizer frio), então a aula será cancelada."*
-
-![Exemplo CPC para NL](https://i.imgur.com/ZKqG9Fh.png)  
-
-> ⚠️ As imagens são apenas ilustrativas. Você pode criar **GIFs mostrando a interação completa** com o site para maior didática.
 
 ---
 
@@ -100,5 +93,5 @@ O objetivo é auxiliar o aprendizado de **lógica proposicional**, tornando a tr
 - Para maior precisão, integrar **OpenAI API ou HuggingFace** é possível, mas **não inclua chaves no código público**.
 
 ---
-## 📂 Estrutura do projeto
 
+## 📂 Estrutura do projeto
