@@ -1,117 +1,143 @@
-# Agente NL ↔ CPC - Lógica para Computação
+# Agente NL ↔ CPC — Lógica para Computação
 
 > Trabalho da disciplina **Lógica para Computação**
-> Uni-FACEF - Professor Márcio Funes
+> Uni-FACEF — Professor Márcio Funes
 
 ---
 
 ## 📝 Descrição
 
-Este projeto é um **Agente de IA simples para Web**, capaz de:
+Este projeto é um **Agente de IA para Web** capaz de:
 
-1. **Traduzir sentenças em linguagem natural (NL) em português para fórmulas do Cálculo Proposicional Clássico (CPC)**.
-2. **Traduzir fórmulas do CPC para frases em português compreensíveis**.
+1. Traduzir frases em português (NL) para **Cálculo Proposicional Clássico (CPC)**.
+2. Traduzir fórmulas CPC para frases em português compreensíveis.
 
-O objetivo é auxiliar o aprendizado de **lógica proposicional**, tornando a transição entre **linguagem natural** e **notação formal** mais intuitiva.
-
----
-
-## 🎯 Funcionalidades
-
-### 1️⃣ Definir proposições
-- Defina proposições (`P`, `Q`, `R`, etc.) e seus significados em português.
-- Proposições podem ser adicionadas, editadas ou removidas.
-- O sistema sugere proposições automaticamente se detectar termos desconhecidos.
-
-### 2️⃣ NL → CPC
-- Tradução de frases simples em português para fórmulas proposicionais.
-- Reconhece conectivos: **e**, **ou**, **não**, **Se… então**, **nem… nem**.
-
-### 3️⃣ CPC → NL
-- Tradução de fórmulas proposicionais para frases em português usando os significados definidos.
-- Suporta conectivos: ∧, ∨, ¬, →, ↔.
-
-### 4️⃣ Extras
-- Normalização de fórmulas: converte símbolos alternativos (->, =>, ~, &&, ||) para padrões ∧, ∨, ¬, →, ↔.
-- Sugestão automática de proposições a partir de frases.
+O objetivo é auxiliar o estudo de **lógica proposicional**, tornando a transição entre **linguagem natural** e **notação formal** mais intuitiva.
 
 ---
 
-## 📌 Como usar
+## 🏗 Arquitetura do Sistema
 
-1. Abra `index.html` no navegador.
-2. **Defina proposições** (P, Q, R...) e seus significados.
-3. **NL → CPC**
-   - Digite uma frase em português.
-   - Clique **Converter NL → CPC**.
-   - Fórmula gerada será exibida.
-4. **CPC → NL**
-   - Digite uma fórmula CPC usando proposições definidas.
-   - Clique **Converter CPC → NL**.
-   - Frase em português será exibida.
-5. **Dicas**
-   - Use frases simples e claras.
-   - Ajuste proposições para sentido correto.
-   - Teste com os exemplos fornecidos.
+```
++-------------------+        +------------------------+
+|                   |        |                        |
+|   Interface Web   | <----> |   Lógica de Tradução   |
+|  (HTML, CSS, JS)  |        |  (NL ↔ CPC, heurísticas|
+|                   |        |   + regras de mapeamento)|
++-------------------+        +------------------------+
+         |
+         v
++-------------------+
+|  Base de          |
+|  Proposições      |
+|  (P, Q, R...)     |
++-------------------+
+```
+
+* **Interface Web:** Recebe frases ou fórmulas, exibe resultados e permite definir proposições.
+* **Base de proposições:** Armazena nomes (P, Q, R...) e seus significados em português.
+* **Lógica de tradução:**
+
+  * **NL → CPC:** identifica conectivos, negações e cláusulas, mapeia fragmentos para proposições existentes ou cria novas.
+  * **CPC → NL:** interpreta a árvore sintática da fórmula e monta frases em português com base nos significados das proposições.
+
+> Observação: Todo processamento é **client-side** (no navegador), sem necessidade de servidor backend.
 
 ---
 
-## 🧩 Exemplos de uso
+## ⚙️ Estratégia de Tradução
 
 ### 1️⃣ NL → CPC
 
-**Frase:**  
-*"Se chover, então a grama ficará molhada."*
+* Baseada em **regras e heurísticas**:
 
-**Fórmula gerada:**  
-`P → Q`
-
----
+  * `Se ... então ...` → `→`
+  * `e` → `∧`, `ou` → `∨`
+  * `não` → `¬`
+  * `nem ... nem ...` → `¬P ∧ ¬Q`
+* **Mapeamento de termos:** cada fragmento da frase é comparado com proposições definidas.
+* **Proposições novas:** se não houver correspondência, o sistema cria P, Q, R automaticamente.
 
 ### 2️⃣ CPC → NL
 
-**Fórmula:**  
-`(P ∧ Q) → R`
+* **Parsing da fórmula:** transforma string em **árvore sintática**.
+* **Reconstrução de frase:** percorre árvore e substitui símbolos por conectivos em português usando os significados das proposições.
 
-**Frase gerada:**  
-*"Se (chover e fizer frio), então a aula será cancelada."*
+### 3️⃣ Uso de LLMs (opcional)
+
+* É possível integrar **OpenAI API ou HuggingFace** para melhorar a interpretação de frases complexas.
+* Não está ativo no código atual para facilitar execução offline.
+
+---
+
+## 🧩 Exemplos de Input/Output
+
+| Tipo     | Entrada                                    | Saída Esperada                               | Observação                                |
+| -------- | ------------------------------------------ | -------------------------------------------- | ----------------------------------------- |
+| NL → CPC | "Se chover e ventar, então aula cancelada" | `(P ∧ Q) → R`                                | Frase simples, heurística funciona.       |
+| NL → CPC | "Não está chovendo"                        | `¬P`                                         | Negação simples corretamente mapeada.     |
+| CPC → NL | `(P ∧ Q) → R`                              | "Se (chover e ventar), então aula cancelada" | Tradução coerente com proposições.        |
+| NL → CPC | "Se chover ou nevar, não vamos à praia"    | `(P ∨ Q) → ¬R`                               | Detecta "ou" e "não" corretamente.        |
+| CPC → NL | `¬(P ∨ Q)`                                 | "Não chover ou não ventar"                   | Frases compostas podem gerar ambiguidade. |
+
+---
+
+## ⚠️ Análise de Acertos e Erros
+
+**Acertos:**
+
+* Frases simples com conectivos diretos (`e`, `ou`, `não`, `Se... então`) são traduzidas corretamente.
+* Negação composta (`¬(P ∧ Q)`) gera resultado coerente: `Não P ou Não Q`.
+
+**Erros / limitações:**
+
+* Frases longas ou com conjunções complexas podem gerar fórmulas incompletas ou ambíguas.
+* Pronomes e termos implícitos (`ela`, `isso`) nem sempre são reconhecidos.
+* Ambiguidade na linguagem natural pode gerar múltiplas interpretações possíveis.
+
+---
+
+## 💡 Possibilidades de Melhoria
+
+* Integrar **modelo de LLM** (ChatGPT API ou HuggingFace) para NL → CPC mais preciso.
+* Suporte a **frases compostas complexas** com múltiplos conectivos.
+* Interface mais interativa: cores diferentes para cada proposição.
+* Exportar fórmulas CPC em **PDF ou imagem**.
+* Criar **histórico de traduções**.
+
+---
+
+## 🌐 Demonstração em vídeo
+
+Clique no link abaixo para ver o agente em funcionamento:
+
+[![Vídeo Demonstrativo](https://img.youtube.com/vi/SEU_VIDEO_ID/0.jpg)](https://youtu.be/SEU_VIDEO_ID)
+
+> Substitua `SEU_VIDEO_ID` pelo ID real do vídeo no YouTube.
 
 ---
 
 ## 💻 Tecnologias
 
-- **HTML / CSS / JavaScript** — interface e lógica.
-- **Heurísticas de NLP simples** — sem bibliotecas externas.
-- Frontend puro → fácil hospedagem online.
-
----
-
-## ⚠️ Observações
-
-- Tradutor é **educacional** e baseado em regras simples.
-- Frases complexas podem gerar sugestões imperfeitas.
-- Para maior precisão, integrar **OpenAI API ou HuggingFace** é possível, mas **não inclua chaves no código público**.
+* **HTML / CSS / JavaScript** — interface e lógica principal.
+* **Heurísticas e parsing** — manipulação de strings e árvore sintática.
+* Frontend puro → fácil hospedagem online (GitHub Pages, Replit, Vercel, etc.).
 
 ---
 
 ## 📂 Estrutura do projeto
 
-├── index.html - Interface web e lógica principal
-
-└── README.md - Este arquivo
-
----
-
-## 🌐 Hospedagem
-
-- [GitHub Pages](https://pages.github.com/)
-
-Basta subir o `index.html` e abrir no navegador.
+```
+.
+├── index.html          # Interface web e lógica principal
+├── README.md           # Este arquivo
+└── assets/             # Imagens ou GIFs explicativos (opcional)
+```
 
 ---
 
 ## 📖 Referências
 
-- Disciplina **Lógica para Computação**, Uni-FACEF  
-- Introdução à **Lógica Proposicional**  
-- HTML/CSS/JS para desenvolvimento web
+* Disciplina **Lógica para Computação**, Uni-FACEF
+* Introdução à **Lógica Proposicional**
+* HTML/CSS/JS para desenvolvimento web
