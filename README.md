@@ -22,13 +22,13 @@ O objetivo é auxiliar o estudo de **lógica proposicional**, tornando a transi�
 +-------------------+        +------------------------+
 |                   |        |                        |
 |   Interface Web   | <----> |   Lógica de Tradução   |
-|  (HTML, CSS, JS)  |        |  (NL ↔ CPC, heurísticas|
-|                   |        |   + regras de mapeamento)|
+|  (HTML, CSS, JS)  |        | (NL ↔ CPC, heurísticas |
+|                   |        | +regras de mapeamento) |
 +-------------------+        +------------------------+
          |
          v
 +-------------------+
-|  Base de          |
+|    Base de        |
 |  Proposições      |
 |  (P, Q, R...)     |
 +-------------------+
@@ -107,16 +107,6 @@ O objetivo é auxiliar o estudo de **lógica proposicional**, tornando a transi�
 
 ---
 
-## 🌐 Demonstração em vídeo
-
-Clique no link abaixo para ver o agente em funcionamento:
-
-[![Vídeo Demonstrativo](https://img.youtube.com/vi/SEU_VIDEO_ID/0.jpg)](https://youtu.be/SEU_VIDEO_ID)
-
-> Substitua `SEU_VIDEO_ID` pelo ID real do vídeo no YouTube.
-
----
-
 ## 💻 Tecnologias
 
 * **HTML / CSS / JavaScript** — interface e lógica principal.
@@ -130,8 +120,7 @@ Clique no link abaixo para ver o agente em funcionamento:
 ```
 .
 ├── index.html          # Interface web e lógica principal
-├── README.md           # Este arquivo
-└── assets/             # Imagens ou GIFs explicativos (opcional)
+└── README.md           # Este arquivo
 ```
 
 ---
