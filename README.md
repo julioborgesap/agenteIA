@@ -98,7 +98,6 @@ O objetivo é auxiliar o aprendizado de **lógica proposicional**, tornando a tr
 
 ├── index.html # Interface web e lógica principal
 ├── README.md # Este arquivo
-└── (opcional) assets/ # Imagens ou GIFs explicativos
 
 ---
 
