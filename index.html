@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+  <html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agente NL ↔ CPC — Lógica para Computação</title>
+
+    <!-- =======================================================
+      ESTILO CSS
+      Definindo aparência da página e elementos
+    ======================================================== -->
+    <style>
+      /*define estilo do corpo da pagina, fonte, margem, cor de fundo...*/
+      body { 
+        font-family: Arial, sans-serif; 
+        margin: 18px; 
+        background: #f7f7fb; 
+        color: #111; 
+      }
+
+      /*títulos principais e secundarios, cor */
+      h1, h2 { 
+        color: #1b2b56; 
+      }
+
+      /* .container: div principal que envolve td o conteúdo da pagina, centralizada e com sombra */
+      .container { 
+        max-width: 900px; 
+        margin: 0 auto; 
+        background: #fff; 
+        padding: 18px; 
+        border-radius: 8px; 
+        box-shadow: 0 6px 18px rgba(20,20,40,0.06); 
+      }
+
+      /* textarea e input[type=text]: caixas de texto para o user digitar frases ou significados */
+      textarea, input[type="text"] { 
+        width: 100%; 
+        padding: 8px; 
+        font-size: 14px; 
+        border-radius: 6px; 
+        border: 1px solid #cfd6ea; 
+        box-sizing: border-box; 
+      }
+
+      /* label: rotulos acima dos campos, negrito */
+      label { 
+        font-weight: 600; 
+        display: block; 
+        margin-top: 10px; 
+      }
+
+      /* .linha: organiza elementos em linha (flexbox) */
+      .linha { 
+        display: flex; 
+        gap: 12px; 
+        margin-top: 8px; 
+      }
+
+      /* .coluna: coluna flexivl dentro de .linha */
+      .coluna { 
+        flex: 1; 
+      }
+
+      /* button: estilo dos botões */
+      button { 
+        padding: 8px 12px; 
+        border-radius: 6px; 
+        border: 0; 
+        background: #1b2b56; 
+        color: #fff; 
+        cursor: pointer; 
+      }
+
+      /* small: texto explicativo menor, com cor mais fracaa */
+      small { 
+        color: #555; 
+      }
+
+      /* .proposicoes: lista visual de proposições definidas pelo user */
+      .proposicoes { 
+        margin-top: 8px; 
+        display: flex; 
+        gap: 8px; 
+        flex-wrap: wrap; 
+      }
+
+      /* .proposicao: cada proposição individual dentro de .proposicoes */
+      .proposicao { 
+        background: #eef2ff; 
+        padding: 6px 8px; 
+        border-radius: 8px; 
+        font-size: 13px; 
+      }
+
+      /* .exemplos: caixa com exemplos de uso */
+      .exemplos { 
+        background: #f0f8ff; 
+        padding: 10px; 
+        border-radius: 6px; 
+        margin-top: 12px; 
+      }
+
+      /* .rodape: texto no final da pagina */
+      .rodape { 
+        font-size: 13px; 
+        color: #666; 
+        margin-top: 14px; 
+      }
+
+      /* .saida: area onde resul de conversão aparece */
+      .saida { 
+        background: #e9fff0; 
+        padding: 10px; 
+        border-radius: 6px; 
+        margin-top: 10px; 
+        white-space: pre-wrap; 
+      }
+
+      /* .aviso: alerta visual de atenção ao usuário */
+      .aviso { 
+        background: #fff3cd; 
+        padding: 8px; 
+        border-radius: 6px; 
+        margin-top: 10px; 
+      }
+
+    </style>
+  </head>
+  <body>
+    <!-- =======================================================
+      CONTEÚDO PRINCIPAL
+      td está dentro de .container pra centralizar e aplicar estilos
+    ======================================================== -->
+    <div class="container">
+      <h1>Agente NL ↔ CPC</h1>
+      <p>
+        Trabalho: Lógica para Computação - Uni-FACEF (Prof. Márcio Funes).<br>
+        Este agente converte sentenças simples em português para fórmulas do Cálculo Proposicional Clássico (CPC) e vice-versa.
+      </p>
+
+      <!-- =======================================================
+        Seção 1: Definir proposições
+      ======================================================== -->
+      <h2>1) Definir ou editar proposições</h2>
+      <small>Defina aqui P, Q, R... (nomes das proposições) e seus significados em português.</small>
+      <div id="areaProposicoes">
+        <!--area onde as proposições é mostrada -->
+      </div>
+      <div style="margin-top:8px;">
+        <input id="novoNomeProp" placeholder="Nome da proposição (ex: P)" type="text"/>
+        <input id="novoSignificadoProp" placeholder="Significado em português (ex: chover)" type="text" style="margin-top:6px"/>
+        <div class="linha" style="margin-top:8px;">
+          <button id="adicionarPropBtn">Adicionar/Atualizar proposição</button>
+          <button id="limparPropsBtn" style="background:#a83232">Limpar todas</button>
+        </div>
+      </div>
+
+      <!-- =======================================================
+        Seção 2: NL -> CPC
+      ======================================================== -->
+      <h2 style="margin-top:18px">2) Modo NL → CPC</h2>
+      <small>Digite uma frase em português (ex: "Se chover, então a grama ficará molhada").</small>
+      <textarea id="entradaNL" rows="3" placeholder="Escreva uma frase em português..."></textarea>
+      <div class="linha">
+        <div class="coluna"><button id="converterNLparaCPC">Converter NL → CPC</button></div>
+        <div class="coluna"><button id="sugerirProps" style="background:#2b7a78">Sugerir proposições da frase</button></div>
+      </div>
+      <div id="saidaNLparaCPC" class="saida" aria-live="polite"></div>
+
+      <!-- =======================================================
+        Seção 3: CPC -> NL
+      ======================================================== -->
+      <h2 style="margin-top:18px">3) Modo CPC → NL</h2>
+      <small>Digite uma fórmula proposicional (ex: (P ∧ Q) → R). Use as proposições definidas acima.</small>
+      <input id="entradaCPC" placeholder="Ex: (P ∧ Q) → R" />
+      <div class="linha" style="margin-top:8px;">
+        <div class="coluna"><button id="converterCPCparaNL">Converter CPC → NL</button></div>
+        <div class="coluna"><button id="normalizarBtn" style="background:#666">Normalizar fórmula</button></div>
+      </div>
+      <div id="saidaCPCparaNL" class="saida" aria-live="polite"></div>
+
+      <!-- =======================================================
+        Exemplos de uso
+      ======================================================== -->
+      <div class="exemplos">
+        <b>Exemplos NL → CPC:</b>
+        <ul>
+          <li>"Se chover, então a grama ficará molhada." → <i>P → Q</i></li>
+          <li>"Chover e fazer frio" → <i>P ∧ Q</i></li>
+          <li>"Não está chovendo" → <i>¬P</i></li>
+        </ul>
+        <b>Exemplos CPC → NL:</b>
+        <ul>
+          <li>"(P ∧ Q) → R" → "Se (chover e fizer frio), então a aula será cancelada."</li>
+          <li>"¬(P ∨ Q)" → "Nem chover nem ventar"</li>
+        </ul>
+      </div>
+
+      <!-- =======================================================
+        Aviso importante
+      ======================================================== -->
+      <div class="aviso">
+        <b>Atenção:</b> Este tradutor usa regras e heurísticas simples para frases didáticas. Frases muito complexas podem gerar sugestões imperfeitas. Use a função de edição de proposições para ajustar os significados.
+      </div>
+
+      <!-- =======================================================
+        Rodape com instruções
+      ======================================================== -->
+      <div class="rodape">
+        <b>Sobre melhorias com LLM (opcional):</b><br>
+        Para maior precisão, você pode integrar a OpenAI API ou HuggingFace. Nunca coloque chave no código cliente.
+      </div>
+    </div>
+
+    <!-- =======================================================
+      SCRIPT JAVASCRIPT
+      logica pra manipular proposições, NL → CPC e CPC → NL
+    ======================================================== -->
+    <script>
+      // -------------------------------------------------------
+      // Obj q armazena proposições: {P: "significado em português", Q: "..."}
+      // -------------------------------------------------------
+      const proposicoes = {}
+
+      // -------------------------------------------------------
+      // Função para renderizar as proposições na interface
+      // -------------------------------------------------------
+      function renderizarProposicoes() {
+        const area = document.getElementById('areaProposicoes')
+        area.innerHTML = ''
+        const wrapper = document.createElement('div')
+        wrapper.className = 'proposicoes'
+        for (const nome of Object.keys(proposicoes)) {
+          const divProp = document.createElement('div')
+          divProp.className = 'proposicao'
+          divProp.innerHTML = `<b>${nome}</b>: <span title="Clique para editar" data-key="${nome}" class="significadoProp">${proposicoes[nome]}</span>`
+          wrapper.appendChild(divProp)
+        }
+        area.appendChild(wrapper)
+
+        //permite clicar no significado pra edita
+        document.querySelectorAll('.significadoProp').forEach(span => {
+          span.style.cursor = 'pointer'
+          span.addEventListener('click', (e) => {
+            const key = e.target.getAttribute('data-key')
+            document.getElementById('novoNomeProp').value = key
+            document.getElementById('novoSignificadoProp').value = proposicoes[key]
+          })
+        })
+      }
+
+      // -------------------------------------------------------
+      // Adc ou atualizar proposição
+      // -------------------------------------------------------
+      document.getElementById('adicionarPropBtn').addEventListener('click', () => {
+        const nome = document.getElementById('novoNomeProp').value.trim().toUpperCase()
+        const significado = document.getElementById('novoSignificadoProp').value.trim()
+        if (!nome || !/^[A-Z]+$/.test(nome)) { alert('Nome inválido. Use letras maiúsculas (ex: P, Q, R).'); return; }
+        if (!significado) { alert('Defina o significado em português da proposição.'); return; }
+        proposicoes[nome] = significado
+        renderizarProposicoes()
+        document.getElementById('novoNomeProp').value = ''
+        document.getElementById('novoSignificadoProp').value = ''
+      });
+
+      // -------------------------------------------------------
+      // limpar tds as proposições
+      // -------------------------------------------------------
+      document.getElementById('limparPropsBtn').addEventListener('click', () => {
+        if (!confirm('Limpar todas as proposições?')) return
+        for (const k of Object.keys(proposicoes)) delete proposicoes[k]
+        renderizarProposicoes()
+      })
+
+      // -------------------------------------------------------
+      // funções utilitarias para NL -> CPC
+      // -------------------------------------------------------
+      function normalizarTexto(s) { return s.replace(/\s+/g,' ').trim(); }
+
+      function dividirSeEntão(frase) {
+        const regex = /\bse\s+(.+?)\s*(?:,?\s*então|entao|,)\s*(.+)/i
+        const m = frase.match(regex)
+        if (m) return { antecedente: m[1].trim(), consequente: m[2].trim() }
+        return null
+      }
+
+      function extrairClausulas(frase) {
+        const separadores = /\b(e|ou|mas|nem|;|,)\b/gi
+        const partes = frase.split(separadores).map(s => s && s.trim()).filter(Boolean)
+        return partes.filter(p => p.length > 1)
+      }
+
+      function encontrarProposicaoPorSignificado(fragmento) {
+        fragmento = fragmento.toLowerCase()
+        for (const nome of Object.keys(proposicoes)) {
+          const sig = proposicoes[nome].toLowerCase()
+          if (sig && (fragmento.includes(sig) || sig.includes(fragmento) || fragmento.split(' ').some(w => sig.includes(w) && w.length>2))) {
+            return nome
+          }
+        }
+        return null
+      }
+
+      function alocarNovoNomeProposicao() {
+        const letras = 'PQRSTUVWXYZABCDEFGHIJKLMNOP'
+        for (const ch of letras) { if (!proposicoes[ch]) return ch; }
+        return 'P'
+      }
+
+      function envolverNegacao(f) { return (f.startsWith('(') && f.endsWith(')')) ? `¬${f}` : `¬${f}`; }
+      function envolverSeComposto(f) { return /^[A-Z]+$/.test(f) ? f : `(${f})`; }
+
+      function fraseParaFormula(frase) {
+        frase = frase.trim()
+        const nemRegex = /\bnem\s+(.+?)\s+(?:nem|,)\s+(.+)/i
+        const nemM = frase.match(nemRegex)
+        if (nemM) {
+          const a = fraseParaFormula(nemM[1])
+          const b = fraseParaFormula(nemM[2])
+          return `(${envolverNegacao(a)} ∧ ${envolverNegacao(b)})`
+        }
+        const naoRegex = /\bn[aã]o\b\s+(.+)/i
+        const naoM = frase.match(naoRegex)
+        if (naoM) { return `¬${envolverSeComposto(fraseParaFormula(naoM[1]))}`; }
+        if (/\b e \b/.test(frase)) { return '(' + frase.split(/\b e \b/).map(f => fraseParaFormula(f)).join(' ∧ ') + ')'; }
+        if (/\b ou \b/.test(frase)) { return '(' + frase.split(/\b ou \b/).map(f => fraseParaFormula(f)).join(' ∨ ') + ')'; }
+        const candidato = encontrarProposicaoPorSignificado(frase)
+        if (candidato) return candidato
+        const nome = alocarNovoNomeProposicao()
+        proposicoes[nome] = frase
+        return nome
+      }
+
+      function nlParaCPC(frase) {
+        frase = normalizarTexto(frase.toLowerCase())
+        const seEntão = dividirSeEntão(frase)
+        if (seEntão) { 
+          const A = fraseParaFormula(seEntão.antecedente)
+          const B = fraseParaFormula(seEntão.consequente)
+          return `${A} → ${B}`
+        }
+        return fraseParaFormula(frase)
+      }
+
+      // -------------------------------------------------------
+      // Eventos NL -> CPC
+      // -------------------------------------------------------
+      document.getElementById('converterNLparaCPC').addEventListener('click', () => {
+        const txt = document.getElementById('entradaNL').value.trim()
+        if (!txt) { alert('Digite uma frase em português.'); return; }
+        const formula = nlParaCPC(txt)
+        document.getElementById('saidaNLparaCPC').textContent = `Fórmula sugerida:\n${formula}\n\n(Proposições definidas/automaticamente criadas: edite as definições acima se necessário.)`
+        renderizarProposicoes()
+      })
+
+      document.getElementById('sugerirProps').addEventListener('click', () => {
+        const txt = document.getElementById('entradaNL').value.trim()
+        if (!txt) { alert('Escreva a frase para sugerir proposições.'); return; }
+        const clausulas = extrairClausulas(txt)
+        const sugestoes = []
+        for (const c of clausulas) {
+          let existente = encontrarProposicaoPorSignificado(c)
+          if (!existente) { existente = alocarNovoNomeProposicao(); proposicoes[existente] = c; }
+          sugestoes.push({ nome: existente, significado: proposicoes[existente] })
+        }
+        renderizarProposicoes()
+        document.getElementById('saidaNLparaCPC').textContent = `Sugestões de proposições:\n${sugestoes.map(s => `${s.nome}: ${s.significado}`).join('\n')}`
+      })
+
+      // -------------------------------------------------------
+      // Funções CPC -> NL
+      // -------------------------------------------------------
+      function normalizarFormula(s) {
+        s = s.replace(/\s+/g,' ')
+        s = s.replace(/->|=>/g,'→')
+        s = s.replace(/<->|<=>/g,'↔')
+        s = s.replace(/~/g,'¬')
+        s = s.replace(/&&/g,'∧')
+        s = s.replace(/\|\|/g,'∨')
+        return s.trim()
+      }
+
+      function parseFormulaEmArvore(s) {
+        s = s.trim(); let i=0
+        function pularEspacos(){ while(/\s/.test(s[i])) i++; }
+        function lerAtomOuParenteses() {
+          pularEspacos()
+          if(s[i]==='('){ i++; const n=parseExpressao(); pularEspacos(); if(s[i]!==')') throw new Error('Parêntese esperado'); i++; return n; }
+          if(s[i]==='¬'||s[i]==='~'||s[i]==='!'){ i++; return { tipo:'not', filho: lerAtomOuParenteses() }; }
+          const match=s.slice(i).match(/^[A-Za-z0-9_]+/); if(!match) throw new Error('Átomo esperado'); i+=match[0].length; return { tipo:'atom', nome:match[0] }
+        }
+        function parseExpressao() {
+          let esquerda = lerAtomOuParenteses()
+          while(true){
+            pularEspacos()
+            if(i>=s.length) break
+            let op = null
+            if(s.slice(i, i+1)==='∧'){op='∧';i++}
+            else if(s.slice(i, i+1)==='∨'){op='∨';i++}
+            else if(s.slice(i, i+1)==='→'){op='→';i++}
+            else if(s.slice(i, i+1)==='↔'){op='↔';i++}
+            else break;
+            let direita = lerAtomOuParenteses()
+            esquerda = { tipo: 'bin', op, esquerda, direita }
+          }
+          return esquerda
+        }
+        return parseExpressao()
+      }
+
+      function arvoreParaNL(arv) {
+        if(arv.tipo==='atom') return proposicoes[arv.nome] || arv.nome
+        if(arv.tipo==='not') return 'Não ' + arvoreParaNL(arv.filho)
+        if(arv.tipo==='bin') {
+          const esq = arvoreParaNL(arv.esquerda)
+          const dir = arvoreParaNL(arv.direita)
+          switch(arv.op){
+            case '∧': return `${esq} e ${dir}`
+            case '∨': return `${esq} ou ${dir}`
+            case '→': return `Se ${esq}, então ${dir}`
+            case '↔': return `${esq} se e somente se ${dir}`
+          }
+        }
+        return '?'
+      }
+
+      // -------------------------------------------------------
+      // Eventos CPC -> NL
+      // -------------------------------------------------------
+      document.getElementById('converterCPCparaNL').addEventListener('click', () => {
+        const formula = document.getElementById('entradaCPC').value.trim()
+        if(!formula){ alert('Digite uma fórmula CPC'); return; }
+        try {
+          const arv = parseFormulaEmArvore(normalizarFormula(formula))
+          document.getElementById('saidaCPCparaNL').textContent = arvoreParaNL(arv)
+        }
+        catch(e){
+          document.getElementById('saidaCPCparaNL').textContent = 'Erro ao interpretar fórmula: ' + e.message
+        }
+      })
+
+      document.getElementById('normalizarBtn').addEventListener('click', () => {
+        const formula = document.getElementById('entradaCPC').value.trim()
+        if(!formula){ alert('Digite uma fórmula CPC'); return; }
+        document.getElementById('saidaCPCparaNL').textContent = normalizarFormula(formula)
+      })
+
+      //renderiza inicialmente proposições (vazio)
+      renderizarProposicoes()
+    </script>
+  </body>
+</html>
