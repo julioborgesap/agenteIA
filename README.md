@@ -1,7 +1,7 @@
-# Agente NL ↔ CPC — Lógica para Computação
+# Agente NL ↔ CPC - Lógica para Computação
 
 > Trabalho da disciplina **Lógica para Computação**
-> Uni-FACEF — Professor Márcio Funes
+> Uni-FACEF - Professor Márcio Funes
 
 ---
 
