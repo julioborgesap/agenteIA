@@ -1,10 +1,10 @@
 # Agente NL ↔ CPC - Lógica para Computação
 
 > Trabalho da disciplina **Lógica para Computação**
-> Uni-FACEF — Professor Márcio Funes
-> Aluno: Julio Cesar
+> Uni-FACEF - Professor Márcio Funes
 
 ---
+
 ## 📝 Descrição
 
 Este projeto é um **Agente de IA simples para Web**, capaz de:
@@ -95,3 +95,23 @@ O objetivo é auxiliar o aprendizado de **lógica proposicional**, tornando a tr
 ---
 
 ## 📂 Estrutura do projeto
+
+├── index.html # Interface web e lógica principal
+├── README.md # Este arquivo
+└── (opcional) assets/ # Imagens ou GIFs explicativos
+
+---
+
+## 🌐 Hospedagem
+
+- [GitHub Pages](https://pages.github.com/)
+
+Basta subir o `index.html` e abrir no navegador.
+
+---
+
+## 📖 Referências
+
+- Disciplina **Lógica para Computação**, Uni-FACEF  
+- Introdução à **Lógica Proposicional**  
+- HTML/CSS/JS para desenvolvimento web
