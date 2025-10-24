@@ -28,9 +28,9 @@ O objetivo é auxiliar o estudo de **lógica proposicional**, tornando a transi�
          |
          v
 +-------------------+
-|    Base de        |
-|  Proposições      |
-|  (P, Q, R...)     |
+|     Base de       |
+|    Proposições    |
+|   (P, Q, R...)    |
 +-------------------+
 ```
 
